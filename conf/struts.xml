@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.devMode" value="true" />
+
+    <package name="default" namespace="/usermanage" extends="struts-default">
+		
+		<!-- 定义新的拦截器栈, 配置 prepare 拦截器栈的 alwaysInvokePrepare 参数值为 false -->
+		<interceptors>
+			<interceptor-stack name="userManageStack">
+				<interceptor-ref name="paramsPrepareParamsStack">
+					<param name="prepare.alwaysInvokePrepare">false</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		
+		<!-- 使用新的拦截器栈 -->
+		<default-interceptor-ref name="userManageStack"></default-interceptor-ref>
+		
+		<action name="user-*" class="userAction" method="{1}">
+			<result name="list">/views/user-list.jsp</result>
+			<result name="delete" type="stream">
+				<param name="contentType">text/html</param>
+				<param name="inputName">inputStream</param>
+			</result>
+			<result name="success" type="redirect">/usermanage/user-list</result>
+			<result name="input">/views/user-input.jsp</result>
+			<result name="illegal">/views/illegalAccess.jsp</result>
+		</action>
+		
+	</package>
+	
+	<package name="login" namespace="/" extends="struts-default">
+		<action name="register" class="com.ssh.usermanage.action.LoginAction" method="register">
+			<result name="success">/index.jsp</result>
+		</action>
+		<action name="validate" class="com.ssh.usermanage.action.LoginAction" method="validateName">
+			<result name="success" type="stream">
+				<param name="contentType">text/html</param>
+				<param name="inputName">inputStream</param>
+			</result>
+		</action>
+		<action name="login" class="com.ssh.usermanage.action.LoginAction" method="login">
+			<result name="success" type="redirect">/usermanage/user-list</result>
+			<result name="failed">/views/login_failed.jsp</result>
+		</action>
+	</package>
+	
+</struts>    
